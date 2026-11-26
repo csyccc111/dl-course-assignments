@@ -1,10 +1,8 @@
 # 云端/服务器依赖（不包含 torch，使用环境自带的 CUDA 版 PyTorch）
-# 固定 numpy/scipy/sklearn 版本，避免 conda 旧 scipy 与 pip 新 numpy 的 ABI 冲突
+# 训练与评测已改为纯 numpy 实现，不需要 scipy / scikit-learn
 transformers==4.57.6
 tokenizers==0.22.2
-numpy==1.26.4
-scipy==1.13.1
-scikit-learn==1.5.2
-matplotlib==3.9.4
+numpy>=1.24
+matplotlib>=3.5
 safetensors>=0.4
 tqdm>=4.66

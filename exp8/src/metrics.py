@@ -6,7 +6,6 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
 from torch.utils.data import DataLoader
 
 from .common import amp_dtype
@@ -14,33 +13,50 @@ from .data import TokenizedSplit
 
 
 def compute_metrics(y_true: list[int], y_pred: list[int], y_prob: list[float] | None = None) -> dict:
-    precision, recall, f1, support = precision_recall_fscore_support(
-        y_true, y_pred, labels=[0, 1], zero_division=0
-    )
-    macro = precision_recall_fscore_support(y_true, y_pred, average="macro", zero_division=0)
-    weighted = precision_recall_fscore_support(y_true, y_pred, average="weighted", zero_division=0)
+    true = np.asarray(y_true, dtype=np.int64)
+    pred = np.asarray(y_pred, dtype=np.int64)
+    n = int(true.size)
+    confusion = np.zeros((2, 2), dtype=np.int64)
+    valid = (true >= 0) & (true < 2) & (pred >= 0) & (pred < 2)
+    np.add.at(confusion, (true[valid], pred[valid]), 1)
+
+    accuracy = float((true == pred).mean()) if n else 0.0
+    per_class = {}
+    precisions, recalls, f1s, supports = [], [], [], []
+    for label in (0, 1):
+        tp = int(confusion[label, label])
+        fp = int(confusion[:, label].sum()) - tp
+        fn = int(confusion[label, :].sum()) - tp
+        precision = tp / (tp + fp) if (tp + fp) else 0.0
+        recall = tp / (tp + fn) if (tp + fn) else 0.0
+        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+        support = int(confusion[label, :].sum())
+        per_class[str(label)] = {
+            "precision": round(precision, 4),
+            "recall": round(recall, 4),
+            "f1": round(f1, 4),
+            "support": support,
+        }
+        precisions.append(precision)
+        recalls.append(recall)
+        f1s.append(f1)
+        supports.append(support)
+
     metrics = {
-        "n": len(y_true),
-        "accuracy": round(float(accuracy_score(y_true, y_pred)), 4),
-        "macro_precision": round(float(macro[0]), 4),
-        "macro_recall": round(float(macro[1]), 4),
-        "macro_f1": round(float(macro[2]), 4),
-        "weighted_f1": round(float(weighted[2]), 4),
-        "per_class": {
-            str(label): {
-                "precision": round(float(precision[i]), 4),
-                "recall": round(float(recall[i]), 4),
-                "f1": round(float(f1[i]), 4),
-                "support": int(support[i]),
-            }
-            for i, label in enumerate([0, 1])
-        },
-        "confusion": confusion_matrix(y_true, y_pred, labels=[0, 1]).tolist(),
+        "n": n,
+        "accuracy": round(accuracy, 4),
+        "macro_precision": round(float(np.mean(precisions)), 4),
+        "macro_recall": round(float(np.mean(recalls)), 4),
+        "macro_f1": round(float(np.mean(f1s)), 4),
+        "weighted_f1": round(float(np.average(f1s, weights=supports)), 4) if sum(supports) else 0.0,
+        "per_class": per_class,
+        "confusion": confusion.tolist(),
     }
-    if y_prob is not None:
-        metrics["prob_mean"] = round(float(np.mean(y_prob)), 4)
-        metrics["prob_min"] = round(float(np.min(y_prob)), 4)
-        metrics["prob_max"] = round(float(np.max(y_prob)), 4)
+    if y_prob is not None and len(y_prob):
+        probs = np.asarray(y_prob, dtype=float)
+        metrics["prob_mean"] = round(float(probs.mean()), 4)
+        metrics["prob_min"] = round(float(probs.min()), 4)
+        metrics["prob_max"] = round(float(probs.max()), 4)
     return metrics
 
 

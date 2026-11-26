@@ -103,8 +103,8 @@ ls -lh outputs_*.tar.gz
 - **rbt3 加载报 `torch>=2.6`**：`hfl/rbt3` 只有 `pytorch_model.bin`，transformers 4.57.6 在 torch<2.6 时拒绝加载。
   先按上文把 `.bin` 转成 `model.safetensors`；不想折腾就跳过它：
   `BERT_MODELS=bert-base-chinese bash scripts/run_all.sh`。
-- **`import sklearn` 时 segfault**：conda 里旧 scipy 和 pip 新 numpy 的 ABI 不匹配。按 `requirements-cloud.txt`
-  固定 `numpy==1.26.4 / scipy==1.13.1 / scikit-learn==1.5.2`，或新建独立 venv（不要继承系统 scipy）。
+- **旧版报 `import sklearn` segfault**：训练与评测已改为纯 numpy 实现，不再依赖 scipy / scikit-learn；
+  `git pull` 到最新后直接跑，不需要再装这两个包。
 - **卡在 `Fetching 10 files: 90%`**：`snapshot_download` 默认把 Flax/TF 权重（`flax_model.msgpack`、`tf_model.h5`）也算进去。
   PyTorch 权重已经下完，直接 `Ctrl+C`；重跑 `python -m src.download_model --model bert-base-chinese --model hfl/rbt3`
   （已默认忽略 `*.h5/*.msgpack/*.ot/*.onnx`），或只保留 `model.safetensors`。
