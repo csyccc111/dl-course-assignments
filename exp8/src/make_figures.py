@@ -46,6 +46,13 @@ def best_run(runs: list[dict], model: str, tag: str = "") -> dict | None:
     return max(candidates, key=lambda r: r["dev_accuracy"])
 
 
+def seed_run(runs: list[dict], model: str, seed: int = 42) -> dict | None:
+    for run in runs:
+        if run["model"] == model and run.get("tag", "") == "" and run["seed"] == seed:
+            return run
+    return best_run(runs, model)
+
+
 def plot_training(runs: list[dict], figures_dir: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
     plotted = 0
@@ -117,7 +124,7 @@ def plot_main_results(runs: list[dict], figures_dir: Path) -> None:
 def plot_confusions(runs: list[dict], figures_dir: Path) -> None:
     entries = []
     for model in MAIN_MODELS:
-        run = best_run(runs, model)
+        run = seed_run(runs, model)
         if run is not None:
             entries.append((model, run))
     if not entries:

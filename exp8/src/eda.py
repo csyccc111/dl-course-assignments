@@ -59,11 +59,18 @@ def main() -> None:
     axes[0].bar(["negative", "positive"], stats["train_dedup"]["labels"], color=["#d93025", "#188038"])
     axes[0].set_title(f"Train labels (dedup n={len(train)})")
     axes[0].set_ylabel("rows")
-    axes[1].hist(train_lengths, bins=60, color="#1a73e8")
+    axes[1].hist(train_lengths, bins=50, range=(0, 500), color="#1a73e8")
     axes[1].axvline(128, color="#f9ab00", linestyle="--", label="128 chars")
     axes[1].axvline(192, color="#d93025", linestyle="--", label="192 chars")
-    axes[1].set_title("Train text length (characters)")
+    axes[1].set_xlim(0, 500)
+    axes[1].set_title("Train text length (characters, clipped at 500)")
     axes[1].set_xlabel("characters")
+    over = int((train_lengths > 500).sum())
+    axes[1].text(
+        0.98, 0.95,
+        f"{over} texts > 500 chars\n(max {int(train_lengths.max())})",
+        transform=axes[1].transAxes, ha="right", va="top", fontsize=8,
+    )
     axes[1].legend(fontsize=8)
     groups = ["train/test", "train/dev"]
     values = [stats["overlap"]["train_test_texts"], stats["overlap"]["train_dev_texts"]]
