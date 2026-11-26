@@ -100,6 +100,8 @@ ls -lh outputs_*.tar.gz
 
 ## 常见问题
 
+- **`import sklearn` 时 segfault**：conda 里旧 scipy 和 pip 新 numpy 的 ABI 不匹配。按 `requirements-cloud.txt`
+  固定 `numpy==1.26.4 / scipy==1.13.1 / scikit-learn==1.5.2`，或新建独立 venv（不要继承系统 scipy）。
 - **卡在 `Fetching 10 files: 90%`**：`snapshot_download` 默认把 Flax/TF 权重（`flax_model.msgpack`、`tf_model.h5`）也算进去。
   PyTorch 权重已经下完，直接 `Ctrl+C`；重跑 `python -m src.download_model --model bert-base-chinese --model hfl/rbt3`
   （已默认忽略 `*.h5/*.msgpack/*.ot/*.onnx`），或只保留 `model.safetensors`。
