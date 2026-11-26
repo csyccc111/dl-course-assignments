@@ -100,6 +100,9 @@ ls -lh outputs_*.tar.gz
 
 ## 常见问题
 
+- **卡在 `Fetching 10 files: 90%`**：`snapshot_download` 默认把 Flax/TF 权重（`flax_model.msgpack`、`tf_model.h5`）也算进去。
+  PyTorch 权重已经下完，直接 `Ctrl+C`；重跑 `python -m src.download_model --model bert-base-chinese --model hfl/rbt3`
+  （已默认忽略 `*.h5/*.msgpack/*.ot/*.onnx`），或只保留 `model.safetensors`。
 - **pip 报 `unknown opcode 112`**：conda/系统 Python 3.12 里的 pip 太旧。执行
   `python -m pip install --upgrade --no-deps --force-reinstall "pip==24.3.1" -i https://pypi.tuna.tsinghua.edu.cn/simple`，
   再重装依赖；不行用 `conda install -n <env> -c conda-forge "pip>=24" setuptools wheel -y`。
