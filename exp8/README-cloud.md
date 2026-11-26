@@ -100,6 +100,9 @@ ls -lh outputs_*.tar.gz
 
 ## 常见问题
 
+- **rbt3 加载报 `torch>=2.6`**：`hfl/rbt3` 只有 `pytorch_model.bin`，transformers 4.57.6 在 torch<2.6 时拒绝加载。
+  先按上文把 `.bin` 转成 `model.safetensors`；不想折腾就跳过它：
+  `BERT_MODELS=bert-base-chinese bash scripts/run_all.sh`。
 - **`import sklearn` 时 segfault**：conda 里旧 scipy 和 pip 新 numpy 的 ABI 不匹配。按 `requirements-cloud.txt`
   固定 `numpy==1.26.4 / scipy==1.13.1 / scikit-learn==1.5.2`，或新建独立 venv（不要继承系统 scipy）。
 - **卡在 `Fetching 10 files: 90%`**：`snapshot_download` 默认把 Flax/TF 权重（`flax_model.msgpack`、`tf_model.h5`）也算进去。
