@@ -1,7 +1,7 @@
 # 云端/服务器依赖（不包含 torch，使用环境自带的 CUDA 版 PyTorch）
-# 训练与评测已改为纯 numpy 实现，不需要 scipy / scikit-learn
-transformers==4.57.6
-tokenizers==0.22.2
+# 4.46.3 与 torch 2.x / Python 3.12 稳定兼容，且不需要 scipy / scikit-learn
+transformers==4.46.3
+tokenizers==0.20.3
 numpy>=1.24
 matplotlib>=3.5
 safetensors>=0.4

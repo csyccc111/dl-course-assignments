@@ -112,6 +112,9 @@ ls -lh outputs_*.tar.gz
   `python -m pip install --upgrade --no-deps --force-reinstall "pip==24.3.1" -i https://pypi.tuna.tsinghua.edu.cn/simple`，
   再重装依赖；不行用 `conda install -n <env> -c conda-forge "pip>=24" setuptools wheel -y`。
 - **HF 下载失败**：确认 `HF_ENDPOINT=https://hf-mirror.com`；或先手动 `python -m src.download_model --model bert-base-chinese`。
+- **`TypeError: 'dict_keyiterator' object is not callable`**：transformers 安装损坏/混装（不是我们的代码）。
+  用 `python -m pip install --force-reinstall --no-deps "transformers==4.46.3" "tokenizers==0.20.3"` 覆盖；
+  仍不行就新建干净 venv 装同一组版本。
 - **transformers 冲突**：镜像里已有旧版时，换干净的 PyTorch 镜像，或 `python -m venv .venv-cloud && source .venv-cloud/bin/activate` 后重跑安装。
 - **路径含中文**：云端统一用 ASCII 路径，不要把项目放到中文目录。
 - **OOM**：4090 24G 足够；若同时跑多个任务，串行执行，不要并发。
