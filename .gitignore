@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.venv/
+.venv-*/
+
+# exp7：数据、模型、运行产物、交付包快照
+exp7/data/
+exp7/models/
+exp7/outputs/
+exp7/frontend/data/
+exp7/frontend/models/
+exp7/frontend/outputs/
+exp7/archive.zip
+
+# exp8：运行产物、HF 缓存、打包文件
+exp8/outputs/
+exp8/models/
+exp8/exp8_cloud.zip
+exp8/outputs_*.tar.gz
+exp8/outputs_debug/
+
+# Office 临时文件
+~$*.docx

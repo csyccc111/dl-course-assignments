@@ -1,0 +1,18 @@
+# 模型与数据：体积大、含人脸，不进仓库
+models/*.onnx
+frontend/models/*.onnx
+data/
+frontend/data/
+archive/
+*.tgz
+*.zip
+
+# 运行产物：可重跑，且包含人脸图
+outputs/
+frontend/outputs/
+
+__pycache__/
+*.pyc
+.venv/
+.workbuddy/
+~$*.docx
