@@ -1,4 +1,7 @@
-# 实验 8 云端运行说明（优云智算 / RTX 4090）
+# 实验 8 运行说明（优云智算 / 实验室 Linux 服务器）
+
+> 实验室服务器同样适用：把 `/root/workspace` 换成你的持久目录（例如 `/media/lenovo/workspace-csy`），
+> 先 `conda activate` 你的环境，再按下面步骤走。
 
 ## 目录约定
 
@@ -55,7 +58,10 @@ PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple bash scripts/setup_cloud.
 
 ## 4. 冒烟
 
+先在当前 shell 里加载缓存配置：
+
 ```bash
+source scripts/env.sh
 python -m src.train_scratch --model lstm --smoke --device cuda
 python -m src.train_bert --model hfl/rbt3 --smoke --device cuda
 ```
@@ -94,6 +100,9 @@ ls -lh outputs_*.tar.gz
 
 ## 常见问题
 
+- **pip 报 `unknown opcode 112`**：conda/系统 Python 3.12 里的 pip 太旧。执行
+  `python -m pip install --upgrade --no-deps --force-reinstall "pip==24.3.1" -i https://pypi.tuna.tsinghua.edu.cn/simple`，
+  再重装依赖；不行用 `conda install -n <env> -c conda-forge "pip>=24" setuptools wheel -y`。
 - **HF 下载失败**：确认 `HF_ENDPOINT=https://hf-mirror.com`；或先手动 `python -m src.download_model --model bert-base-chinese`。
 - **transformers 冲突**：镜像里已有旧版时，换干净的 PyTorch 镜像，或 `python -m venv .venv-cloud && source .venv-cloud/bin/activate` 后重跑安装。
 - **路径含中文**：云端统一用 ASCII 路径，不要把项目放到中文目录。
